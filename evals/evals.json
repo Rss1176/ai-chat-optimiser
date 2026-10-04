@@ -1,0 +1,50 @@
+{
+  "skill_name": "chat-optimiser",
+  "notes": "Paste each `chat` into a new Claude chat (or feed it as prior context), then ask: 'optimise this chat'. Check the report against `expect`.",
+  "evals": [
+    {
+      "id": "simple-qa-on-opus",
+      "current_model": "Opus",
+      "chat": "USER: What's the difference between let and const in JavaScript?\nASSISTANT: `let` can be reassigned; `const` can't be rebound (though objects it points to can still be mutated). Both are block-scoped.\nUSER: Thanks. And how do I format a date as YYYY-MM-DD?\nASSISTANT: `new Date().toISOString().slice(0, 10)` — note it uses UTC.\nUSER: Rewrite this sentence to sound friendlier: 'Your request has been denied.'\nASSISTANT: 'Unfortunately we weren't able to approve your request this time, but we're happy to help you try again.'",
+      "expect": {
+        "suggested_tier": "Haiku",
+        "confidence": "High",
+        "waste_flags_include": ["Over-powered model"],
+        "must": ["every number marked ≈", "says the chat is otherwise lean or small"]
+      }
+    },
+    {
+      "id": "repeated-paste-coding",
+      "current_model": "Opus",
+      "chat": "USER: Here's my utils.py [~300 lines pasted]. Why does parse_date crash on '2024-02-30'?\nASSISTANT: datetime raises ValueError for invalid dates; wrap it in try/except and return None.\nUSER: Here's utils.py again with your change [same ~300 lines pasted]. Now add a unit test.\nASSISTANT: [full 300-line file rewritten plus test]\nUSER: utils.py again [same 300 lines]. Can you rename parse_date to parse_iso_date?\nASSISTANT: [full 300-line file rewritten again]",
+      "expect": {
+        "suggested_tier": "Sonnet",
+        "confidence": "High or Med",
+        "waste_flags_include": ["Repeated paste", "Verbose outputs"],
+        "must": ["recommends pasting once / only changed lines", "includes fresh start prompt with the current state of parse_iso_date"]
+      }
+    },
+    {
+      "id": "topic-drift-long-thread",
+      "current_model": "Sonnet",
+      "chat": "USER: Help me plan a 5-day Lisbon itinerary. [12 turns of itinerary back-and-forth]\nUSER: Unrelated — draft a cover letter for a product manager role [pastes 2-page CV]. [6 turns of cover letter edits]\nUSER: Also, what's a good sourdough hydration for beginners? [3 turns]",
+      "expect": {
+        "suggested_tier": "Haiku for itinerary/sourdough, Sonnet for cover letter",
+        "confidence": "Med",
+        "waste_flags_include": ["Topic drift", "Long-lived thread"],
+        "must": ["recommends a new chat per task", "fresh start prompt covers only the active task or is split per task"]
+      }
+    },
+    {
+      "id": "hard-reasoning-keep-opus",
+      "current_model": "Opus",
+      "chat": "USER: We're designing a multi-region payments ledger. Requirements: exactly-once settlement, 50k TPS peak, regulatory data residency in EU and US, and sub-second reconciliation. [Long discussion over 10 turns weighing CRDTs vs. consensus, idempotency keys, failure modes during region partition, and a formal argument for why double-spend can't occur under the chosen design, with several corrections from the user.]",
+      "expect": {
+        "suggested_tier": "Opus (keep current model)",
+        "confidence": "Low for any downgrade",
+        "waste_flags_include": [],
+        "must": ["recommends keep current model", "does not claim large model-switch savings", "may still suggest a fresh start prompt"]
+      }
+    }
+  ]
+}
