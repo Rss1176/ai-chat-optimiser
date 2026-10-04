@@ -1,6 +1,10 @@
 # Chat Optimiser
 
-A Claude Skill that reviews your current chat and tells you, in one short report:
+> A Claude Skill that makes your Claude chats leaner and cheaper. It spots wasted context, tells you when a smaller Claude model would do the job, and estimates what you'd save.
+
+## What it does
+
+Ask Claude to optimise a chat and the skill reviews it and tells you, in one short report:
 
 - **What it's costing.** Estimated tokens and the API-equivalent $.
 - **Where context is wasted.** For example, repeated pastes, topic drift, or verbose answers, each with a one-line fix.
@@ -52,4 +56,3 @@ When prices change, update both `reference/pricing.md` and `PRICES` in `scripts/
 
 - **Verify mode:** with your own API key, re-run sample turns on the cheaper model and show the answers side by side.
 - **Claude Code version:** read the session files Claude Code saves on your machine for exact token and cost numbers.
-- **Browser extension** for Gemini and Copilot, reusing the same rubric and pricing.

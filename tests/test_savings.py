@@ -49,7 +49,7 @@ class SavingsTest(unittest.TestCase):
 
     def test_unknown_model_rejected(self):
         with self.assertRaises(ValueError):
-            savings.model_key("gpt-5")
+            savings.model_key("mystery-model")
 
     def test_movable_out_of_range_rejected(self):
         with self.assertRaises(ValueError):
